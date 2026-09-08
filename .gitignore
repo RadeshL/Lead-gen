@@ -1,0 +1,10 @@
+# Local environment and secrets
+backend/.env
+.env
+
+# Python generated files
+__pycache__/
+*.py[cod]
+
+# Local tooling
+.vscode/
