@@ -1,7 +1,8 @@
-# app/processing/pipeline.py
-
+import asyncio
 from sqlalchemy.orm import Session
 from app.database.models import SearchJob, JobStatus
+from app.discovery.engine import DiscoveryEngine
+from backend.app.processing.query_process import ParsedQuery
 
 def run_pipeline(job_id: int, db: Session):
     job = db.query(SearchJob).filter(SearchJob.id == job_id).first()
@@ -12,9 +13,18 @@ def run_pipeline(job_id: int, db: Session):
         _update_job(db, job, status=JobStatus.running, stage="discovery", progress=0)
 
         # ── STAGE 1: Discovery ──────────────────────────────
-        # TODO: plug in discovery providers here
-        # candidate_urls = discovery_engine.search(job)
+        parsed = ParsedQuery(
+            country=job.country,
+            city=job.city,
+            industry=job.industry,
+            employee_min=job.employee_min,
+            employee_max=job.employee_max,
+        )
+        engine = DiscoveryEngine()
+        candidates = asyncio.run(engine.discover(parsed))
         _update_job(db, job, stage="discovery", progress=20)
+
+        print(f"[pipeline] discovered {len(candidates)} candidates")
 
         # ── STAGE 2: Scraping ───────────────────────────────
         # TODO: plug in BeautifulSoup scraper here

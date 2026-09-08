@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.database.db import get_db
 from app.database.models import SearchJob
 from app.schemas.search import SearchRequest, SearchJobRead
-from app.processing.query_parser import parse_query
+from app.processing.query_process import parse_query
 from app.processing.pipeline import run_pipeline
 
 router = APIRouter(prefix="/search", tags=["search"])

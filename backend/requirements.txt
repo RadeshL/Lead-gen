@@ -5,3 +5,8 @@ alembic
 psycopg2-binary
 pydantic-settings
 python-dotenv
+transformers
+torch
+gliner
+httpx
+duckduckgo-search

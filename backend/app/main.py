@@ -1,13 +1,11 @@
 from fastapi import FastAPI
 from app.api.routes import companies, search, export
-
+from app.api.routes import status
 app = FastAPI(title="LeadGen API")
-app.include_router(companies.router, prefix="/api")
-
 app.include_router(companies.router, prefix="/api")
 app.include_router(search.router,    prefix="/api")
 app.include_router(export.router,    prefix="/api")
-
+app.include_router(status.router, prefix="/api")
 @app.get("/")
 def root():
     return {
