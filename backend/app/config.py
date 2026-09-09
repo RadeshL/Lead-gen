@@ -8,6 +8,7 @@ class Settings(BaseSettings):
     DEBUG: bool = False
     GOOGLE_CSE_API_KEY: str | None = None
     GOOGLE_CSE_ID: str | None = None
+    GEMINI_API_KEY: str | None = None
 
     class Config:
         env_file = ENV_FILE

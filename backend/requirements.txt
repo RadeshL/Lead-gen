@@ -10,3 +10,4 @@ torch
 gliner
 httpx
 duckduckgo-search
+google-generativeai

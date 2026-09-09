@@ -10,18 +10,22 @@ class Company(Base):
 
     id              = Column(Integer, primary_key=True, index=True)
     name            = Column(String, nullable=False)
-    website         = Column(String, unique=True, index=True)  # domain is dedup key
+    website         = Column(String, unique=True, index=True)
     description     = Column(Text)
     country         = Column(String)
     city            = Column(String)
-    employee_min    = Column(Integer)   # store ranges, not a single number
+    employee_min    = Column(Integer)
     employee_max    = Column(Integer)
     industry        = Column(String)
-    is_saas         = Column(Boolean)
-    business_model  = Column(String)    # B2B / B2C / B2B2C
+    category        = Column(String)              # ← new: specific sub-category
+    company_stage   = Column(String)              # ← new: Startup / Growth / etc.
+    delivery_models = Column(String)              # ← new: "SaaS,API/SDK" (CSV)
+    business_models = Column(String)              # ← new: "B2B,B2B2C" (CSV)
+    is_saas         = Column(Boolean)             # ← kept for backward compat
+    business_model  = Column(String)              # ← kept for backward compat
     linkedin_url    = Column(String)
     founded_year    = Column(Integer)
-    ai_confidence   = Column(Float)     # 0.0 – 1.0
+    ai_confidence   = Column(Float)
     created_at      = Column(DateTime(timezone=True), server_default=func.now())
     updated_at      = Column(DateTime(timezone=True), onupdate=func.now())
 
