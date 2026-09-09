@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.models import SearchJob, JobStatus
 from app.discovery.engine import DiscoveryEngine
 from backend.app.processing.query_process import ParsedQuery
+from app.scraping.scraper import scrape_all
 
 def run_pipeline(job_id: int, db: Session):
     job = db.query(SearchJob).filter(SearchJob.id == job_id).first()
@@ -27,8 +28,11 @@ def run_pipeline(job_id: int, db: Session):
         print(f"[pipeline] discovered {len(candidates)} candidates")
 
         # ── STAGE 2: Scraping ───────────────────────────────
-        # TODO: plug in BeautifulSoup scraper here
-        # raw_companies = scraper.scrape_all(candidate_urls)
+        _update_job(db, job, stage="scraping", progress=25)
+        scraped = asyncio.run(scrape_all(candidates))
+        # Only keep successful scrapes
+        successful = [s for s in scraped if s.scrape_success]
+        print(f"[pipeline] scraped {len(successful)}/{len(scraped)} successfully")
         _update_job(db, job, stage="scraping", progress=40)
 
         # ── STAGE 3: Cleaning ───────────────────────────────
