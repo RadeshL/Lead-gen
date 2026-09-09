@@ -4,6 +4,9 @@ from app.database.models import SearchJob, JobStatus
 from app.discovery.engine import DiscoveryEngine
 from backend.app.processing.query_process import ParsedQuery
 from app.scraping.scraper import scrape_all
+from app.processing.cleaner      import clean
+from app.processing.deduplicator import deduplicate
+from app.enrichment.engine       import enrich_all
 
 def run_pipeline(job_id: int, db: Session):
     job = db.query(SearchJob).filter(SearchJob.id == job_id).first()
@@ -35,12 +38,20 @@ def run_pipeline(job_id: int, db: Session):
         print(f"[pipeline] scraped {len(successful)}/{len(scraped)} successfully")
         _update_job(db, job, stage="scraping", progress=40)
 
-        # ── STAGE 3: Cleaning ───────────────────────────────
-        # TODO: normalise + deduplicate
+         # ── STAGE 3: Cleaning ───────────────────────────────
+        _update_job(db, job, stage="cleaning", progress=41)
+
+        cleaned     = clean(successful)
+        deduplicated = deduplicate(cleaned)
+
+        print(f"[pipeline] after cleaning: {len(deduplicated)} companies")
         _update_job(db, job, stage="cleaning", progress=60)
 
+
         # ── STAGE 4: Enrichment ─────────────────────────────
-        # TODO: employee count, LinkedIn, etc.
+        _update_job(db, job, stage="enrichment", progress=61)
+        enriched = asyncio.run(enrich_all(deduplicated))
+        print(f"[pipeline] enrichment done: {len(enriched)} companies")
         _update_job(db, job, stage="enrichment", progress=75)
 
         # ── STAGE 5: AI Classification ──────────────────────
